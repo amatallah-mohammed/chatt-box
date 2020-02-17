@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Chatt</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            font-family: Tahoma,sans-serif;
+            box-sizing: border-box;
+        }
+        body{
+            background: mediumvioletred;
+
+
+        }
+        #box{
+            width: 500px;
+            min-width: 390px;
+            height: 600px;
+            box-shadow: 0 3px #ccc;
+            overflow: auto;
+            background: #fff;
+            padding: 25px;
+            margin: 20px auto;
+        }
+        .chat{
+            display: flex;
+            flex-flow: row wrap;
+            align-items: flex-start;
+            margin: 10px;
+        }
+        .photo{
+            width: 60px;
+        height: 60px;
+        background: #ccc;
+        border-radius: 50%;
+        }
+        .chat-message{
+            width: 80%;
+            padding: 15px;
+            margin: 5px 10px 0;
+            background: #1ddced;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 18px;
+
+        }
+        .self .chat-message{
+            background: #41e5ffc7;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+   <div id="box"></div>
+<div class="">
+        <div class="form-group">
+            <label for="message"></label>
+            <input type="text" class="form-control" id="message"
+                   placeholder="Enter message" name="message" value="">
+        </div>
+
+        <button type="submit" id="send"   class="btn btn-primary" disabled>Send</button>
+</div>
+
+</div>
+<script>
+    var s=new WebSocket("ws://localhost:3350");
+    var chat=document.getElementById("box");
+    var user_name=prompt("Enter user name");
+    while (localStorage.getItem(user_name,user_name))
+        var user_name=prompt("Enter user name");
+    localStorage.setItem(user_name,user_name);
+
+    document.getElementById("send").addEventListener("click",function () {
+        var message=document.getElementById("message").value;
+
+
+
+        if(message ==="ب"){
+    message="بسم الله الرحمن الرحيم";
+}else if(message ==="س"){
+    message="السلام وعليكم";
+}else if(message ==="ك"){
+    message="كيف الحال";
+}else if(message ==="م"){
+    message="مساء الخير";
+}else if(message ==="ص"){
+    message="صباح الخير";
+}
+
+        var x=message.split(' ');
+        message=' ';
+        x.forEach(function (value) {
+            if(value !== 'كلبة')
+                message += value+" ";
+
+        });
+        var msg=JSON.stringify({sender:user_name,data:message});
+
+            s.send(msg);
+            chat.innerHTML+="<div class='chat self'><span class='photo'> you </span><span class='chat-message'>"+message+"</span></div><br>";
+            document.getElementById("message").value="";
+
+
+
+    })
+    s.onmessage=function (event) {
+
+        chat.innerHTML+="<h1>"+event.data+"</h1><br>";
+
+    };
+    //Enter button
+    var input=document.getElementById("message");
+    input.addEventListener("keyup",function (event) {
+        document.getElementById("send").disabled=false;
+        if(event.keyCode === 13){
+            event.preventDefault();
+            document.getElementById("send").click();
+        }
+
+    });
+    //btn disabled
+    // $(document).ready(function () {
+    //     var checkFiled;
+    //     checkFiled=$("input#message").val().length;
+    //     var disabled_button=function () {
+    //         if(checkFiled > 3){
+    //             $("#send").removeAttr("disabled");
+    //         }else{
+    //             $("#send").attr("disabled","disabled");
+    //         }
+    //
+    //     }
+    //     disabled_button();
+    //     $('input#message').keyup(function () {
+    //         checkFiled=$('input#message').val().length;
+    //         disabled_button();
+    //
+    //     });
+    //
+    // });
+</script>
+</body>
+</html>
